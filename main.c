@@ -88,6 +88,7 @@ typedef enum {
     INST_LDH,
     INST_DI,
     INST_EI,
+    INST_HALT,
 } instruction_e;
 
 typedef enum {
@@ -995,6 +996,1134 @@ opcode_t opcodes[0xFF] =
 	.inst = INST_CCF,
 	.bytes    = 1,
 	.cycles   = 4,
+    },
+
+    /* 0x4X */
+
+    [0x40] = /* LD B, B */
+    { 
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  =
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_B,
+	    .immediate = true
+	},
+	.op_right =
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_B,
+	    .immediate = true
+	},
+    },
+    [0x41] = /* LD B, C */
+    { 
+	.inst = INST_LD, 
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_B,
+	    .immediate = true
+	},
+	.op_right =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_C,
+	    .immediate = true
+	},
+    },
+    [0x42] = /* LD B, D */
+    {
+	.inst = INST_LD, 
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  = 
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_B,
+	    .immediate = true
+	},
+	.op_right =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_D,
+	    .immediate = true
+	},
+    },
+    [0x43] = /* LD B, E */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  = 
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_B,
+	    .immediate = true
+	},
+	.op_right = 
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_E,
+	    .immediate = true
+	},
+    },
+    [0x44] = /* LD B, H */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_B,
+	    .immediate = true
+	},
+	.op_right = 
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_H,
+	    .immediate = true
+	},
+    },
+    [0x45] = /* LD B, L */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_B,
+	    .immediate = true
+	},
+	.op_right =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_L,
+	    .immediate = true
+	},
+    },
+    [0x46] = /* LD B, [HL] */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 8,
+	.op_left  =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_B,
+	    .immediate = true
+	},
+	.op_right =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_16BIT,
+	    .reg  = REGISTER_HL,
+	    .immediate = false
+	},
+    },
+    [0x47] = /* LD B, A */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  = 
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_B,
+	    .immediate = true
+	},
+	.op_right =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_A,
+	    .immediate = true
+	},
+    },
+    [0x48] = /* LD C, B */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  = 
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_C,
+	    .immediate = true
+	},
+	.op_right =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_B,
+	    .immediate = true
+	},
+    },
+    [0x49] = /* LD C, C */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  = 
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_C,
+	    .immediate = true
+	},
+	.op_right =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_C,
+	    .immediate = true
+	},
+    },
+    [0x4A] = /* LD C, D */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_C,
+	    .immediate = true,
+	},
+	.op_right = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_D,
+	    .immediate = true,
+	},
+    },
+    [0x4B] = /* LD C, E */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_C,
+	    .immediate = true,
+	},
+	.op_right = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_E,
+	    .immediate = true,
+	},
+    },
+    [0x4C] = /* LD C, H */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_A,
+	    .immediate = true,
+	},
+    },
+    [0x4D] = /* LD C, L */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_C,
+	    .immediate = true,
+	},
+	.op_right = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_L,
+	    .immediate = true,
+	},
+    },
+    [0x4E] = /* LD C, [HL] */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 8,
+	.op_left = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_C,
+	    .immediate = true,
+	},
+	.op_right = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_16BIT,
+	    .reg = REGISTER_HL,
+	    .immediate = false,
+	},
+    },
+    [0x4F] = /* LD C, A */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_C,
+	    .immediate = true,
+	},
+	.op_right = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_A,
+	    .immediate = true,
+	},
+    },
+
+    /* 0x5X */
+
+    [0x50] = /* LD D, B */
+    { 
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  =
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_D,
+	    .immediate = true
+	},
+	.op_right =
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_B,
+	    .immediate = true
+	},
+    },
+    [0x51] = /* LD D, C */
+    { 
+	.inst = INST_LD, 
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_D,
+	    .immediate = true
+	},
+	.op_right =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_C,
+	    .immediate = true
+	},
+    },
+    [0x52] = /* LD D, D */
+    {
+	.inst = INST_LD, 
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  = 
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_D,
+	    .immediate = true
+	},
+	.op_right =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_D,
+	    .immediate = true
+	},
+    },
+    [0x53] = /* LD D, E */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  = 
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_D,
+	    .immediate = true
+	},
+	.op_right = 
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_E,
+	    .immediate = true
+	},
+    },
+    [0x54] = /* LD D, H */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_D,
+	    .immediate = true
+	},
+	.op_right = 
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_H,
+	    .immediate = true
+	},
+    },
+    [0x55] = /* LD D, L */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_D,
+	    .immediate = true
+	},
+	.op_right =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_L,
+	    .immediate = true
+	},
+    },
+    [0x56] = /* LD D, [HL] */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 8,
+	.op_left  =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_D,
+	    .immediate = true
+	},
+	.op_right =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_16BIT,
+	    .reg  = REGISTER_HL,
+	    .immediate = false
+	},
+    },
+    [0x57] = /* LD D, A */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  = 
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_D,
+	    .immediate = true
+	},
+	.op_right =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_A,
+	    .immediate = true
+	},
+    },
+    [0x58] = /* LD E, B */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  = 
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_E,
+	    .immediate = true
+	},
+	.op_right =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_B,
+	    .immediate = true
+	},
+    },
+    [0x59] = /* LD E, C */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  = 
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_E,
+	    .immediate = true
+	},
+	.op_right =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_C,
+	    .immediate = true
+	},
+    },
+    [0x5A] = /* LD E, D */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_E,
+	    .immediate = true,
+	},
+	.op_right = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_D,
+	    .immediate = true,
+	},
+    },
+    [0x5B] = /* LD E, E */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_E,
+	    .immediate = true,
+	},
+	.op_right = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_E,
+	    .immediate = true,
+	},
+    },
+    [0x5C] = /* LD E, H */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_A,
+	    .immediate = true,
+	},
+    },
+    [0x5D] = /* LD E, L */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_E,
+	    .immediate = true,
+	},
+	.op_right = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_L,
+	    .immediate = true,
+	},
+    },
+    [0x5E] = /* LD E, [HL] */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 8,
+	.op_left = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_E,
+	    .immediate = true,
+	},
+	.op_right = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_16BIT,
+	    .reg = REGISTER_HL,
+	    .immediate = false,
+	},
+    },
+    [0x5F] = /* LD E, A */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_E,
+	    .immediate = true,
+	},
+	.op_right = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_A,
+	    .immediate = true,
+	},
+    },
+
+    /* 0x6X */
+
+    [0x60] = /* LD H, B */
+    { 
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  =
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_H,
+	    .immediate = true
+	},
+	.op_right =
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_B,
+	    .immediate = true
+	},
+    },
+    [0x61] = /* LD H, C */
+    { 
+	.inst = INST_LD, 
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_H,
+	    .immediate = true
+	},
+	.op_right =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_C,
+	    .immediate = true
+	},
+    },
+    [0x62] = /* LD H, D */
+    {
+	.inst = INST_LD, 
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  = 
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_H,
+	    .immediate = true
+	},
+	.op_right =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_D,
+	    .immediate = true
+	},
+    },
+    [0x63] = /* LD H, E */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  = 
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_H,
+	    .immediate = true
+	},
+	.op_right = 
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_E,
+	    .immediate = true
+	},
+    },
+    [0x64] = /* LD H, H */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_H,
+	    .immediate = true
+	},
+	.op_right = 
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_H,
+	    .immediate = true
+	},
+    },
+    [0x65] = /* LD H, L */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_H,
+	    .immediate = true
+	},
+	.op_right =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_L,
+	    .immediate = true
+	},
+    },
+    [0x66] = /* LD H, [HL] */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 8,
+	.op_left  =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_H,
+	    .immediate = true
+	},
+	.op_right =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_16BIT,
+	    .reg  = REGISTER_HL,
+	    .immediate = false
+	},
+    },
+    [0x67] = /* LD H, A */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  = 
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_H,
+	    .immediate = true
+	},
+	.op_right =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_A,
+	    .immediate = true
+	},
+    },
+    [0x68] = /* LD L, B */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  = 
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_L,
+	    .immediate = true
+	},
+	.op_right =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_B,
+	    .immediate = true
+	},
+    },
+    [0x69] = /* LD L, C */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  = 
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_L,
+	    .immediate = true
+	},
+	.op_right =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_C,
+	    .immediate = true
+	},
+    },
+    [0x6A] = /* LD L, D */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_L,
+	    .immediate = true,
+	},
+	.op_right = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_D,
+	    .immediate = true,
+	},
+    },
+    [0x6B] = /* LD L, E */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_L,
+	    .immediate = true,
+	},
+	.op_right = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_E,
+	    .immediate = true,
+	},
+    },
+    [0x6C] = /* LD L, H */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_A,
+	    .immediate = true,
+	},
+    },
+    [0x6D] = /* LD L, L */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_L,
+	    .immediate = true,
+	},
+	.op_right = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_L,
+	    .immediate = true,
+	},
+    },
+    [0x6E] = /* LD L, [HL] */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 8,
+	.op_left = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_L,
+	    .immediate = true,
+	},
+	.op_right = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_16BIT,
+	    .reg = REGISTER_HL,
+	    .immediate = false,
+	},
+    },
+    [0x6F] = /* LD L, A */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_L,
+	    .immediate = true,
+	},
+	.op_right = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_A,
+	    .immediate = true,
+	},
+    },
+
+    /* 0x7X */
+
+    [0x70] = /* LD [HL], B */
+    { 
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 8,
+	.op_left  =
+	{
+	    .type = OPERAND_TYPE_REGISTER_16BIT,
+	    .reg  = REGISTER_HL,
+	    .immediate = false
+	},
+	.op_right =
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_B,
+	    .immediate = true
+	},
+    },
+    [0x71] = /* LD [HL], C */
+    { 
+	.inst = INST_LD, 
+	.bytes    = 1,
+	.cycles   = 8,
+	.op_left  =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_16BIT,
+	    .reg  = REGISTER_HL,
+	    .immediate = false
+	},
+	.op_right =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_C,
+	    .immediate = true
+	},
+    },
+    [0x72] = /* LD [HL], D */
+    {
+	.inst = INST_LD, 
+	.bytes    = 1,
+	.cycles   = 8,
+	.op_left  = 
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_16BIT,
+	    .reg  = REGISTER_HL,
+	    .immediate = false
+	},
+	.op_right =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_D,
+	    .immediate = true
+	},
+    },
+    [0x73] = /* LD [HL], E */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 8,
+	.op_left  = 
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_16BIT,
+	    .reg  = REGISTER_HL,
+	    .immediate = false
+	},
+	.op_right = 
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_E,
+	    .immediate = true
+	},
+    },
+    [0x74] = /* LD [HL], H */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 8,
+	.op_left  =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_16BIT,
+	    .reg  = REGISTER_HL,
+	    .immediate = false
+	},
+	.op_right = 
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_H,
+	    .immediate = true
+	},
+    },
+    [0x75] = /* LD [HL], L */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 8,
+	.op_left  =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_16BIT,
+	    .reg  = REGISTER_HL,
+	    .immediate = false
+	},
+	.op_right =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_L,
+	    .immediate = true
+	},
+    },
+    [0x76] = /* HALT */
+    {
+	.inst = INST_HALT,
+	.bytes    = 1,
+	.cycles   = 4,
+    },
+    [0x77] = /* LD [HL], A */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 8,
+	.op_left  = 
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_16BIT,
+	    .reg  = REGISTER_HL,
+	    .immediate = true
+	},
+	.op_right =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_A,
+	    .immediate = true
+	},
+    },
+    [0x78] = /* LD A, B */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  = 
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_A,
+	    .immediate = true
+	},
+	.op_right =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_B,
+	    .immediate = true
+	},
+    },
+    [0x79] = /* LD A, C */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  = 
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_A,
+	    .immediate = true
+	},
+	.op_right =
+	{ 
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg  = REGISTER_C,
+	    .immediate = true
+	},
+    },
+    [0x7A] = /* LD A, D */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_A,
+	    .immediate = true,
+	},
+	.op_right = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_D,
+	    .immediate = true,
+	},
+    },
+    [0x7B] = /* LD A, E */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_A,
+	    .immediate = true,
+	},
+	.op_right = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_E,
+	    .immediate = true,
+	},
+    },
+    [0x7C] = /* LD A, H */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left  = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_A,
+	    .immediate = true,
+	},
+    },
+    [0x7D] = /* LD A, L */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_A,
+	    .immediate = true,
+	},
+	.op_right = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_L,
+	    .immediate = true,
+	},
+    },
+    [0x7E] = /* LD A, [HL] */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 8,
+	.op_left = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_A,
+	    .immediate = true,
+	},
+	.op_right = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_16BIT,
+	    .reg = REGISTER_HL,
+	    .immediate = false,
+	},
+    },
+    [0x7F] = /* LD A, A */
+    {
+	.inst = INST_LD,
+	.bytes    = 1,
+	.cycles   = 4,
+	.op_left = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_A,
+	    .immediate = true,
+	},
+	.op_right = 
+	{
+	    .type = OPERAND_TYPE_REGISTER_8BIT,
+	    .reg = REGISTER_A,
+	    .immediate = true,
+	},
     },
 };
 
