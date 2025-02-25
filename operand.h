@@ -1,6 +1,8 @@
 #ifndef __OPERAND_H__
 #define __OPERAND_H__
 
+#include <stdbool.h>
+
 #include "register.h"
 
 typedef enum {

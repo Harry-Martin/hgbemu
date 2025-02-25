@@ -55,4 +55,6 @@ typedef enum {
     INST_HALT,
 } instruction_e;
 
+char *instruction_to_string(instruction_e inst);
+
 #endif /* __INSTRUCTION_H__ */

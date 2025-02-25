@@ -1,9 +1,10 @@
 
 #include <stdbool.h>
+#include <stdio.h>
 
 #include "opcode.h"
 
-opcode_t opcodes[0xFF + 0x01] =
+opcode_t opcodes[OPCODE_COUNT] =
 {
     [0x00] = /* NOP */
     { 
@@ -3871,12 +3872,21 @@ opcode_t opcodes[0xFF + 0x01] =
     },
 };
 
-opcode_t *opcode_get_opcodes()
+inline opcode_t *opcode_get(uint8_t opcode_value)
 {
-    return opcodes;
+    return &opcodes[opcode_value];
 }
 
-size_t opcode_get_opcode_count()
+
+void opcode_print(uint8_t opcode_value)
 {
-    return (sizeof(opcodes) / sizeof(opcodes[0]));
+    opcode_t *opcode = opcode_get(opcode_value);
+    printf("Opcode 0x%02X\n", opcode_value);
+    printf("	inst: %d\n", opcode->inst); 
+    printf("	bytes: %d\n", opcode->bytes); 
+    printf("	cycles: %d\n", opcode->cycles); 
+    printf("	left operand:\n"); 
+    printf("		type:%d\n", opcode->op_left.type); 
+    printf("		reg:%d\n", opcode->op_left.reg); 
+    printf("		immediate:%d\n", opcode->op_left.immediate); 
 }

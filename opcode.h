@@ -8,6 +8,8 @@
 #include "instruction.h"
 #include "operand.h"
 
+#define OPCODE_COUNT 256
+
 typedef struct {
     instruction_e inst;
     uint8_t bytes;
@@ -16,7 +18,8 @@ typedef struct {
     operand_t op_right;
 } opcode_t;
 
-opcode_t *opcode_get_opcodes();
-size_t opcode_get_opcode_count();
+opcode_t *opcode_get(uint8_t opcode_value);
+void opcode_print(uint8_t opcode_value);
+
 
 #endif  /* __OPCODE_H__ */

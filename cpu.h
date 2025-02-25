@@ -43,11 +43,17 @@ typedef struct {
     };
     uint16_t SP; /* Stack Pointer */
     uint16_t PC; /* Program Counter */
+    uint16_t IR; /* Instruction Register */
 } registers_t;
 
 typedef struct {
     registers_t reg;
-    uint8_t RAM[0xFFFF];
+    uint8_t RAM[0xFFFF + 0x0001];
 } cpu_t;
 
 #endif /* __CPU_H__ */
+
+
+void cpu_init();
+void cpu_fetch();
+void cpu_execute();
