@@ -9,8 +9,7 @@
 
 int main (int argc, char **argv)
 {
-    cpu_t cpu = {0};
-
+    cpu_init();
     for (size_t i = 0; i < 10; ++i) {
 	cpu_fetch();
 	cpu_execute();
