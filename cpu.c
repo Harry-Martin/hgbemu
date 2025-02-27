@@ -182,14 +182,14 @@ inline static uint8_t read_byte_at_pc(bool immediate)
 }
 
 
-inline static uint8_t read_short_at_pc(bool immediate)
+inline static uint16_t read_short_at_pc(bool immediate)
 {
     /* first read the value at the program counter
      * remembering that it is little endian*/
     uint16_t value = (uint16_t)read_byte_at_pc(true);
+    printf("				VALUE BEFORE 0x%04X\n", value);
     value |= ((uint16_t)read_byte_at_pc(true) << 8);
-    
-    cpu.reg.PC += 2;
+    printf("				VALUE after 0x%04X\n", value);
 
     /* if this operand is not immediate, we must follow the pointer first */
     if (!immediate)
@@ -269,6 +269,7 @@ void cpu_print_state()
     printf("CPU STATE:\n");
     printf("PC: 0x%04X\n", cpu.reg.PC);
     printf("A: 0x%02X\n", cpu.reg.A);
+    printf("BC: 0x%04X\n", cpu.reg.BC);
 
 }
 
@@ -282,6 +283,9 @@ void cpu_init()
     cpu.RAM[0x0003] = 0x02;
     cpu.RAM[0x0004] = 0x3E;
     cpu.RAM[0x0005] = 0x03;
+    cpu.RAM[0x0006] = 0x01;
+    cpu.RAM[0x0007] = 0x12;
+    cpu.RAM[0x0008] = 0x34;
 }
 
 
