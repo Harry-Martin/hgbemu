@@ -209,6 +209,10 @@ static int operand_get_value(operand_t *operand, uint16_t* value)
 	case OPERAND_TYPE_REGISTER_16BIT:
 	{
 	    read_register(operand->reg, value);
+	    if (operand->immediate)
+		printf("%s", register_to_string(operand->reg));
+	    else
+		printf("[%s]", register_to_string(operand->reg));
 	} break;  
 
 	case OPERAND_TYPE_N8:
@@ -220,12 +224,17 @@ static int operand_get_value(operand_t *operand, uint16_t* value)
 		return -EINVAL;
 	    }
 	   *value = read_byte_at_pc(operand->immediate);
+	    printf("0x%02X", *value);
 	} break;
 
 	case OPERAND_TYPE_N16:
 	case OPERAND_TYPE_A16:
 	{
 	    *value = read_short_at_pc(operand->immediate);
+	    if (operand->immediate)
+		printf("0x%04X", *value);
+	    else
+		printf("[0x%04X]", *value);
 	    
 	} break;             
 
@@ -234,6 +243,7 @@ static int operand_get_value(operand_t *operand, uint16_t* value)
 	    uint8_t HRAM_offset; 
 	    HRAM_offset = read_byte_at_pc(operand->immediate);
 	    *value = 0xFF00 + HRAM_offset;
+	    printf("0x%02X", *value);
 	} break;             
 
 	default:
@@ -244,6 +254,29 @@ static int operand_get_value(operand_t *operand, uint16_t* value)
     }
     return 0;
 }
+
+static int handle_add(operand_t *left, operand_t *right)
+{
+    uint16_t src;
+    uint16_t dst;
+
+    if (!(left->type == OPERAND_TYPE_REGISTER_8BIT ||
+	  left->type == OPERAND_TYPE_REGISTER_16BIT))
+    {
+	printf("%s: SOMETHING HAS GONE WRONG", __FUNCTION__);
+	/* first operand must be a register */
+	return -EINVAL;
+    }
+
+    operand_get_value(left, &dst);
+    printf(", ");
+    operand_get_value(right, &src);
+    //printf("operand_get_value: 0x%04X\n", src);
+    write_register(left->reg, dst + src);
+    //printf("write_register: 0x%04X into %s\n", left->reg + src, register_to_string(left->reg));
+    return 0;
+}
+
 
 static int handle_ld(operand_t *left, operand_t *right)
 {
@@ -257,10 +290,12 @@ static int handle_ld(operand_t *left, operand_t *right)
 	return -EINVAL;
     }
 
+    printf("%s, ", register_to_string(left->reg));
     operand_get_value(right, &src);
-    printf("operand_get_value: 0x%04X\n", src);
+    //printf("operand_get_value: 0x%04X\n", src);
     write_register(left->reg, src);
-    printf("write_register: 0x%04X into %s\n", src, register_to_string(left->reg));
+    //printf("write_register: 0x%04X into %s\n", src, register_to_string(left->reg));
+    return 0;
 }
 
 /* ======= PRIVATE FUNCTIONS ======= */
@@ -269,7 +304,8 @@ void cpu_print_state()
     printf("CPU STATE:\n");
     printf("PC: 0x%04X\n", cpu.reg.PC);
     printf("A: 0x%02X\n", cpu.reg.A);
-    printf("BC: 0x%04X\n", cpu.reg.BC);
+    printf("B: 0x%02X\n", cpu.reg.B);
+    //printf("BC: 0x%04X\n", cpu.reg.BC);
 
 }
 
@@ -278,14 +314,14 @@ void cpu_init()
 {
     cpu.reg.PC = 0x0000;
     cpu.RAM[0x0000] = 0x3E;
-    cpu.RAM[0x0001] = 0x01;
-    cpu.RAM[0x0002] = 0x3E;
-    cpu.RAM[0x0003] = 0x02;
-    cpu.RAM[0x0004] = 0x3E;
-    cpu.RAM[0x0005] = 0x03;
-    cpu.RAM[0x0006] = 0x01;
-    cpu.RAM[0x0007] = 0x12;
-    cpu.RAM[0x0008] = 0x34;
+    cpu.RAM[0x0001] = 0x00; 
+    cpu.RAM[0x0002] = 0x06;
+    cpu.RAM[0x0003] = 0x01; 
+    cpu.RAM[0x0004] = 0x80;
+    cpu.RAM[0x0005] = 0x80;
+    cpu.RAM[0x0006] = 0x80;
+    cpu.RAM[0x0007] = 0x80;
+    cpu.RAM[0x0008] = 0x80;
 }
 
 
@@ -299,7 +335,7 @@ void cpu_fetch()
 void cpu_execute()
 {
     opcode_t *opcode = opcode_get(cpu.reg.IR);
-    printf("[0x%04X] %s\n",
+    printf("[0x%04X] %s ",
 	    cpu.reg.PC - 1,
 	    instruction_to_string(opcode->inst));
     switch(opcode->inst)
@@ -312,8 +348,13 @@ void cpu_execute()
 	{
 	    handle_ld(&opcode->op_left, &opcode->op_right);
 	} break;
+	case INST_ADD:
+	{
+	    handle_add(&opcode->op_left, &opcode->op_right);
+	} break;
 	default:
 	    printf("ERROR: failed to execute instruction");
-    }
 
+    }
+    printf("\n");
 }
