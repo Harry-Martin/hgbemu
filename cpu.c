@@ -2,6 +2,9 @@
 
 #include "cpu.h"
 #include "opcode.h"
+#include "operand.h"
+#include "register.h"
+#include "errno.h"
 
 typedef struct {
     union {
@@ -33,7 +36,7 @@ typedef struct {
 	    uint8_t E;
 	};
 	uint16_t DE;
-    };
+};
     union {
 	struct {
 	    uint8_t H;
@@ -53,9 +56,232 @@ typedef struct {
 
 static cpu_t cpu = {0};
 
+
+/* ======= PRIVATE FUNCTIONS ======= */
+static int read_register(register_e registerType, uint16_t* value)
+{
+    switch(registerType) 
+    {
+	case REGISTER_A:
+	{
+	    *value = cpu.reg.A;
+	} break;
+	case REGISTER_F:
+	{
+	    *value = cpu.reg.F;
+	} break;
+	case REGISTER_C:
+	{
+	    *value = cpu.reg.C;
+	} break;
+	case REGISTER_B:
+	{
+	    *value = cpu.reg.B;
+	} break;
+	case REGISTER_D:
+	{
+	    *value = cpu.reg.D;
+	} break;
+	case REGISTER_E:
+	{
+	    *value = cpu.reg.E;
+	} break;
+	case REGISTER_H:
+	{
+	    *value = cpu.reg.H;
+	} break;
+	case REGISTER_L:
+	{
+	    *value = cpu.reg.L;
+	} break;
+	default:
+	{
+	    return -EINVAL;
+	}
+    }
+    return 0;
+}
+
+
+static int write_register(register_e registerType, uint16_t value)
+{
+    switch(registerType) 
+    {
+	case REGISTER_A:
+	{
+	    cpu.reg.A = (uint8_t)value;
+	} break;
+	case REGISTER_F:
+	{
+	    cpu.reg.F = (uint8_t)value;
+	} break;
+	case REGISTER_C:
+	{
+	    cpu.reg.C = (uint8_t)value;
+	} break;
+	case REGISTER_B:
+	{
+	    cpu.reg.B = (uint8_t)value;
+	} break;
+	case REGISTER_D:
+	{
+	    cpu.reg.D = (uint8_t)value;
+	} break;
+	case REGISTER_E:
+	{
+	    cpu.reg.E = (uint8_t)value;
+	} break;
+	case REGISTER_H:
+	{
+	    cpu.reg.H = (uint8_t)value;
+	} break;
+	case REGISTER_L:
+	{
+	    cpu.reg.L = (uint8_t)value;
+	} break;
+	case REGISTER_AF:
+	{
+	    cpu.reg.AF = value;
+	} break;
+	case REGISTER_HL:
+	{
+	    cpu.reg.HL = value;
+	} break;
+	case REGISTER_BC:
+	{
+	    cpu.reg.BC = value;
+	} break;
+	case REGISTER_DE:
+	{
+	    cpu.reg.DE = value;
+	} break;
+	case REGISTER_SP:
+	{
+	    cpu.reg.SP = value;
+	} break;
+	default:
+	{
+	    return -EINVAL;
+	}
+    }
+    return 0;
+}
+
+inline static uint8_t read_byte_at_pc(bool immediate)
+{
+    uint8_t byte;
+
+    byte = cpu.RAM[cpu.reg.PC];
+    cpu.reg.PC++;
+    if (!immediate)
+    {
+	byte = cpu.RAM[byte];
+    }
+
+    return byte;
+}
+
+
+inline static uint8_t read_short_at_pc(bool immediate)
+{
+    /* first read the value at the program counter
+     * remembering that it is little endian*/
+    uint16_t value = (uint16_t)read_byte_at_pc(true);
+    value |= ((uint16_t)read_byte_at_pc(true) << 8);
+    
+    cpu.reg.PC += 2;
+
+    /* if this operand is not immediate, we must follow the pointer first */
+    if (!immediate)
+    {
+	value = cpu.RAM[value];
+    }
+
+    return value;
+}
+
+
+static int operand_get_value(operand_t *operand, uint16_t* value)
+{
+    switch(operand->type)
+    {
+	case OPERAND_TYPE_REGISTER_8BIT:
+	case OPERAND_TYPE_REGISTER_16BIT:
+	{
+	    read_register(operand->reg, value);
+	} break;  
+
+	case OPERAND_TYPE_N8:
+	case OPERAND_TYPE_E8:
+	{
+	    if (!operand->immediate)
+	    {
+		/* 8bit values must be immediate */
+		return -EINVAL;
+	    }
+	   *value = read_byte_at_pc(operand->immediate);
+	} break;
+
+	case OPERAND_TYPE_N16:
+	case OPERAND_TYPE_A16:
+	{
+	    *value = read_short_at_pc(operand->immediate);
+	    
+	} break;             
+
+	case OPERAND_TYPE_A8:
+	{
+	    uint8_t HRAM_offset; 
+	    HRAM_offset = read_byte_at_pc(operand->immediate);
+	    *value = 0xFF00 + HRAM_offset;
+	} break;             
+
+	default:
+	{
+	    /* invalid operand type */
+	    return -EINVAL;
+	}
+    }
+    return 0;
+}
+
+static int handle_ld(operand_t *left, operand_t *right)
+{
+    uint16_t src;
+
+    if (!(left->type == OPERAND_TYPE_REGISTER_8BIT ||
+	  left->type == OPERAND_TYPE_REGISTER_16BIT))
+    {
+	printf("%s: SOMETHING HAS GONE WRONG", __FUNCTION__);
+	/* first operand must be a register */
+	return -EINVAL;
+    }
+
+    operand_get_value(right, &src);
+    printf("operand_get_value: 0x%04X\n", src);
+    write_register(left->reg, src);
+    printf("write_register: 0x%04X into %s\n", src, register_to_string(left->reg));
+}
+
+/* ======= PRIVATE FUNCTIONS ======= */
+void cpu_print_state()
+{
+    printf("CPU STATE:\n");
+    printf("PC: 0x%04X\n", cpu.reg.PC);
+    printf("A: 0x%02X\n", cpu.reg.A);
+
+}
+
+
 void cpu_init() 
 {
     cpu.reg.PC = 0x0000;
+    cpu.RAM[0x0000] = 0x3E;
+    cpu.RAM[0x0001] = 0x01;
+    cpu.RAM[0x0002] = 0x3E;
+    cpu.RAM[0x0003] = 0x02;
+    cpu.RAM[0x0004] = 0x3E;
+    cpu.RAM[0x0005] = 0x03;
 }
 
 
@@ -72,6 +298,18 @@ void cpu_execute()
     printf("[0x%04X] %s\n",
 	    cpu.reg.PC - 1,
 	    instruction_to_string(opcode->inst));
-
+    switch(opcode->inst)
+    {
+	case INST_NOP:
+	{
+	    /* Do nothing with NOP instruction */
+	} break;
+	case INST_LD:
+	{
+	    handle_ld(&opcode->op_left, &opcode->op_right);
+	} break;
+	default:
+	    printf("ERROR: failed to execute instruction");
+    }
 
 }

@@ -20,4 +20,5 @@ typedef enum {
     REGISTER_PC,
 } register_e;
 
+char* register_to_string(register_e reg);
 #endif /* __INSTRUCTION_H__ */

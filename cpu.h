@@ -4,5 +4,6 @@
 void cpu_init();
 void cpu_fetch();
 void cpu_execute();
+void cpu_print_state();
 
 #endif /* __CPU_H__ */

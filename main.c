@@ -15,5 +15,8 @@ int main (int argc, char **argv)
 	cpu_execute();
     }
 
+    cpu_print_state();
+
+
     return 0;
 }
