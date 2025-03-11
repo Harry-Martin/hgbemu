@@ -94,6 +94,22 @@ static int read_register(register_e registerType, uint16_t* value)
 	{
 	    *value = cpu.reg.L;
 	} break;
+	case REGISTER_AF:
+	{
+	    *value = cpu.reg.AF;
+	} break;
+	case REGISTER_BC:
+	{
+	    *value = cpu.reg.BC;
+	} break;
+	case REGISTER_DE:
+	{
+	    *value = cpu.reg.DE;
+	} break;
+	case REGISTER_HL:
+	{
+	    *value = cpu.reg.HL;
+	} break;
 	default:
 	{
 	    return -EINVAL;
@@ -187,9 +203,7 @@ inline static uint16_t read_short_at_pc(bool immediate)
     /* first read the value at the program counter
      * remembering that it is little endian*/
     uint16_t value = (uint16_t)read_byte_at_pc(true);
-    printf("				VALUE BEFORE 0x%04X\n", value);
     value |= ((uint16_t)read_byte_at_pc(true) << 8);
-    printf("				VALUE after 0x%04X\n", value);
 
     /* if this operand is not immediate, we must follow the pointer first */
     if (!immediate)
@@ -290,11 +304,21 @@ static int handle_ld(operand_t *left, operand_t *right)
 	return -EINVAL;
     }
 
-    printf("%s, ", register_to_string(left->reg));
-    operand_get_value(right, &src);
-    //printf("operand_get_value: 0x%04X\n", src);
-    write_register(left->reg, src);
-    //printf("write_register: 0x%04X into %s\n", src, register_to_string(left->reg));
+
+    if (left->immediate)
+    {
+	printf("%s, ", register_to_string(left->reg));
+	operand_get_value(right, &src);
+	write_register(left->reg, src);
+    }
+    else
+    {
+	uint16_t dst;
+	read_register(left->reg, &dst);
+	printf("[%s], ", register_to_string(left->reg));
+	operand_get_value(right, &src);
+	cpu.RAM[dst] = src;
+    }
     return 0;
 }
 
@@ -302,10 +326,29 @@ static int handle_ld(operand_t *left, operand_t *right)
 void cpu_print_state()
 {
     printf("CPU STATE:\n");
-    printf("PC: 0x%04X\n", cpu.reg.PC);
-    printf("A: 0x%02X\n", cpu.reg.A);
-    printf("B: 0x%02X\n", cpu.reg.B);
-    //printf("BC: 0x%04X\n", cpu.reg.BC);
+    printf("PC: 0x%04X SP: 0x%04X IR: 0x%04X\n",
+	    cpu.reg.PC, cpu.reg.SP, cpu.reg.IR);
+    printf("A: 0x%02X	B: 0x%02X D: 0x%02X H: 0x%02X\n",
+	    cpu.reg.A, cpu.reg.B,cpu.reg.D, cpu.reg.H);
+    printf("F: 0x%02X C: 0x%02X E: 0x%02X L: 0x%02X\n",
+	    cpu.reg.F, cpu.reg.C,cpu.reg.E,cpu.reg.L);
+
+    printf("RAM:\n\t"); 
+    for (uint16_t i = 0x0; i <= 0xF; i++)
+    {
+	printf("%01X  ", i);
+    }
+    printf("\n"); 
+
+    for (uint16_t i = 0; i <= 0xFF; i++)
+    {
+	if (i % 0x10 == 0)
+	{
+	    printf("\n%04X\t", i); 
+	}
+	printf("%02X ", cpu.RAM[i]);
+    }
+    printf("\n"); 
 
 }
 
@@ -314,14 +357,14 @@ void cpu_init()
 {
     cpu.reg.PC = 0x0000;
     cpu.RAM[0x0000] = 0x3E;
-    cpu.RAM[0x0001] = 0x00; 
-    cpu.RAM[0x0002] = 0x06;
-    cpu.RAM[0x0003] = 0x01; 
-    cpu.RAM[0x0004] = 0x80;
-    cpu.RAM[0x0005] = 0x80;
-    cpu.RAM[0x0006] = 0x80;
-    cpu.RAM[0x0007] = 0x80;
-    cpu.RAM[0x0008] = 0x80;
+    cpu.RAM[0x0001] = 0x69; 
+    cpu.RAM[0x0002] = 0x01;
+    cpu.RAM[0x0003] = 0x08; 
+    cpu.RAM[0x0004] = 0x00;
+    cpu.RAM[0x0005] = 0x02;
+    cpu.RAM[0x0006] = 0x00;
+    cpu.RAM[0x0007] = 0x00;
+    cpu.RAM[0x0008] = 0x00;
 }
 
 
@@ -335,9 +378,11 @@ void cpu_fetch()
 void cpu_execute()
 {
     opcode_t *opcode = opcode_get(cpu.reg.IR);
+
     printf("[0x%04X] %s ",
 	    cpu.reg.PC - 1,
 	    instruction_to_string(opcode->inst));
+
     switch(opcode->inst)
     {
 	case INST_NOP:
